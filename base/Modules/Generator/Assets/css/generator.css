@@ -1,0 +1,32 @@
+.skin-square label{
+	width: 100%;
+}
+
+#modelo .fa-bars{
+	cursor: move;
+}
+
+#modelo .ui-sortable-placeholder{
+	height: 59px;
+}
+#modelo .form-group input,
+#modelo .form-group select{
+	height: 34px;
+}
+#modelo .form-group .textarea{
+	height: 140px;
+}
+
+#relaciones thead i.fa-plus,
+#relaciones i.fa-times{
+	cursor: pointer;
+}
+
+#relaciones tbody .tr-move{
+	cursor: move;
+}
+
+#relaciones > tbody > tr > td {
+	 vertical-align: middle;
+	 text-align: center;
+}

@@ -1,0 +1,22 @@
+<?php
+
+namespace {{namespace}};
+
+use {{namespaceParent}};
+
+{{includes}}
+
+class {{classname}} extends {{extends}}
+{
+    protected $table = '{{table}}';
+    protected $fillable = {{fillable}};
+    protected $campos = {{campos}};
+
+    public function __construct(array $attributes = array())
+    {
+        parent::__construct($attributes);
+        {{options}}
+    }
+
+    {{metodos}}
+}

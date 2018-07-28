@@ -1,0 +1,16 @@
+{
+    "name": "Prueba",
+    "alias": "prueba",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\Prueba\\Providers\\PruebaServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

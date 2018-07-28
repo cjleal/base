@@ -1,0 +1,9 @@
+<?php
+
+namespace {{namespace}};
+
+use App\Http\Requests\Request;
+
+class {{classname}} extends Request {
+    protected $reglasArr = {{rules}};
+}

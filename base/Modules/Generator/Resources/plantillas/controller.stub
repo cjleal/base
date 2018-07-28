@@ -1,0 +1,162 @@
+<?php
+
+namespace {{namespace}};
+
+//Controlador Padre
+use {{namespaceParent}};
+
+//Dependencias
+use DB;
+use App\Http\Requests\Request;
+use Yajra\Datatables\Datatables;
+use Illuminate\Database\QueryException;
+
+//Request
+use {{request}};
+
+//Modelos
+use {{model}};
+
+class {{classname}} extends Controller
+{
+    protected $titulo = '{{titulo}}';
+
+    public $js = [
+        '{{table}}'
+    ];
+    
+    public $css = [
+        '{{table}}'
+    ];
+
+    public $librerias = [
+        'datatables'
+    ];
+
+    public function index()
+    {
+        return $this->view('{{view}}', [
+            '{{table}}' => new {{table}}()
+        ]);
+    }
+
+    public function nuevo()
+    {
+        ${{table}} = new {{table}}();
+        return $this->view('{{view}}', [
+            'layouts' => 'admin::layouts.popup',
+            '{{table}}' => ${{table}}
+        ]);
+    }
+
+    public function cambiar(Request $request, $id = 0)
+    {
+        ${{table}} = {{table}}::find($id);
+        return $this->view('{{view}}', [
+            'layouts' => 'admin::layouts.popup',
+            '{{table}}' => ${{table}}
+        ]);
+    }
+
+    public function buscar(Request $request, $id = 0)
+    {
+        if ($this->permisologia($this->ruta() . '/restaurar') || $this->permisologia($this->ruta() . '/destruir')) {
+            ${{table}} = {{table}}::withTrashed()->find($id);
+        } else {
+            ${{table}} = {{table}}::find($id);
+        }
+
+        if (${{table}}) {
+            return array_merge(${{table}}->toArray(), [
+                's' => 's',
+                'msj' => trans('controller.buscar')
+            ]);
+        }
+
+        return trans('controller.nobuscar');
+    }
+
+    public function guardar({{table}}Request $request, $id = 0)
+    {
+        DB::beginTransaction();
+        try{
+            ${{table}} = $id == 0 ? new {{table}}() : {{table}}::find($id);
+
+            ${{table}}->fill($request->all());
+            ${{table}}->save();
+        } catch(QueryException $e) {
+            DB::rollback();
+            return $e->getMessage();
+        } catch(Exception $e) {
+            DB::rollback();
+            return $e->errorInfo[2];
+        }
+        DB::commit();
+
+        return [
+            'id'    => ${{table}}->id,
+            'texto' => ${{table}}->nombre,
+            's'     => 's',
+            'msj'   => trans('controller.incluir')
+        ];
+    }
+
+    public function eliminar(Request $request, $id = 0)
+    {
+        try{
+            {{table}}::destroy($id);
+        } catch (QueryException $e) {
+            return $e->getMessage();
+        } catch (Exception $e) {
+            return $e->errorInfo[2];
+        }
+
+        return ['s' => 's', 'msj' => trans('controller.eliminar')];
+    }
+
+    public function restaurar(Request $request, $id = 0)
+    {
+        try {
+            {{table}}::withTrashed()->find($id)->restore();
+        } catch (QueryException $e) {
+            return $e->getMessage();
+        } catch (Exception $e) {
+            return $e->errorInfo[2];
+        }
+
+        return ['s' => 's', 'msj' => trans('controller.restaurar')];
+    }
+
+    public function destruir(Request $request, $id = 0)
+    {
+        try {
+            {{table}}::withTrashed()->find($id)->forceDelete();
+        } catch (QueryException $e) {
+            return $e->getMessage();
+        } catch (Exception $e) {
+            return $e->errorInfo[2];
+        }
+
+        return ['s' => 's', 'msj' => trans('controller.destruir')];
+    }
+
+    public function datatable(Request $request)
+    {
+        $sql = {{table}}::select([
+            {{datatable}}
+        ]);
+
+        if ($request->verSoloEliminados == 'true') {
+            $sql->onlyTrashed();
+        } elseif ($request->verEliminados == 'true') {
+            $sql->withTrashed();
+        }
+
+        return Datatables::of($sql)
+            ->setRowId('id')
+            ->setRowClass(function ($registro) {
+                return is_null($registro->deleted_at) ? '' : 'bg-red-thunderbird bg-font-red-thunderbird';
+            })
+            ->make(true);
+    }
+}

@@ -1,0 +1,13 @@
+#fields thead i.fa-plus,
+#fields i.fa-times{
+	cursor: pointer;
+}
+
+#fields tbody .tr-move{
+	cursor: move;
+}
+
+#fields > tbody > tr > td {
+	 vertical-align: middle;
+	 text-align: center;
+}
